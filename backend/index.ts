@@ -11,7 +11,7 @@ let database: User[] = [];
 const app = express();
 const PORT = process.env.PORT || 3000;
 app
-    .use(cors())
+    .use(cors({ exposedHeaders: ['Authorization'] }))
     .use(express.json())
     .use(express.urlencoded({ extended: true }))
     .post('/signup', (req, res) => {
@@ -43,7 +43,8 @@ app
                                 expiresIn: '24h',
                             }
                         );
-                        res.cookie('cookie', token);
+                        //! res.cookie('cookie', token);
+                        res.setHeader('Authorization', `Bearer ${token}`);
                         res.json({ success: true });
                     } else {
                         res.json({ success: false, error: 'user not found '})
@@ -56,11 +57,22 @@ app
                 res.json({ success: false, error: 'user not found' })
             }
     })
-    .get('/', (req, res) => {
-        // console.log(database);
-    })
-    .listen(PORT, () =>
-        console.log(`server has started at: http://localhost:${PORT}`)
-    );
+.post('/verifyUser', (req, res) => {
+    console.log(req.headers.authorization)
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if(jwt.verify(token!, process.env.API_KEY!)) {
+        res.json({ success: true, msg: 'verified' })
+    } else {
+        res.json({ success: false, error: 'invalid token'})
+    }
+})
+
+    // .get('/', (req, res) => {
+    //     // console.log(database);
+    // })
+.listen(PORT, () =>
+    console.log(`server has started at: http://localhost:${PORT}`)
+);
 
 console.log(PORT);
