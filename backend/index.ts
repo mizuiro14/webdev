@@ -16,7 +16,7 @@ app
     .use(express.urlencoded({ extended: true }))
     .post('/signup', (req, res) => {
         const user = req.body as User;
-
+        
         bcrypt.hash(user.password, 10).then((hashedPwd) => {
             console.log(hashedPwd);
             database.push({ ...user, password: hashedPwd });

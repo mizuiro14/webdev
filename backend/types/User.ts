@@ -6,7 +6,6 @@ export interface User {
 }
 
 export interface UserLogin {
-    address: string;
     password: string;
     userName: string;
 }
